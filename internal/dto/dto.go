@@ -91,3 +91,34 @@ type ParamIndicatorUpdate struct {
 	OidID          string  `json:"oid_id" binding:"required" example:"00000000-0000-0000-0000-000000000000"`
 	DotterNotation *string `json:"dotter_notation" example:"1.3.6.1.2.1.1.3.0"`
 }
+
+type MappingCreate struct {
+	IndicatorID int64   `json:"indicator_id" binding:"required" example:"2"`
+	ParamID     int64   `json:"param_id" binding:"required" example:"5"`
+	Frequency   string  `json:"frequency" binding:"required" example:"MEDIUM"` // Строковый энум
+	Coefficient *string `json:"coefficient,omitempty" example:"1.5"`
+}
+
+type MappingUpdate struct {
+	IndicatorID int64   `json:"indicator_id" binding:"required" example:"2"`
+	ParamID     int64   `json:"param_id" binding:"required" example:"5"`
+	Frequency   string  `json:"frequency" binding:"required" example:"HIGH"`
+	Coefficient *string `json:"coefficient,omitempty" example:"2.0"`
+}
+
+type DeviceComponentCreate struct {
+	ModelID       int64  `json:"model_id" binding:"required" example:"10"`
+	InternalOrder int32  `json:"internal_order" example:"1"`
+	ParentID      *int64 `json:"parent_id,omitempty" example:"3"`
+}
+
+type DeviceComponentUpdate struct {
+	ModelID       int64  `json:"model_id" binding:"required" example:"10"`
+	InternalOrder int32  `json:"internal_order" example:"2"`
+	ParentID      *int64 `json:"parent_id,omitempty" example:"3"`
+}
+
+type BindDeviceMappingRequest struct {
+	DeviceComponentID int64 `json:"device_component_id" binding:"required" example:"1"`
+	MappingID         int64 `json:"mapping_id" binding:"required" example:"5"`
+}

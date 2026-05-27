@@ -1,4 +1,16 @@
 definitions:
+  filler_internal_dto.BindDeviceMappingRequest:
+    properties:
+      device_component_id:
+        example: 1
+        type: integer
+      mapping_id:
+        example: 5
+        type: integer
+    required:
+    - device_component_id
+    - mapping_id
+    type: object
   filler_internal_dto.BindParamRequest:
     properties:
       component_id:
@@ -69,6 +81,34 @@ definitions:
     - name_ru
     - title
     type: object
+  filler_internal_dto.DeviceComponentCreate:
+    properties:
+      internal_order:
+        example: 1
+        type: integer
+      model_id:
+        example: 10
+        type: integer
+      parent_id:
+        example: 3
+        type: integer
+    required:
+    - model_id
+    type: object
+  filler_internal_dto.DeviceComponentUpdate:
+    properties:
+      internal_order:
+        example: 2
+        type: integer
+      model_id:
+        example: 10
+        type: integer
+      parent_id:
+        example: 3
+        type: integer
+    required:
+    - model_id
+    type: object
   filler_internal_dto.DeviceIndicatorCreate:
     properties:
       contact:
@@ -110,6 +150,45 @@ definitions:
       services:
         example: 74
         type: integer
+    type: object
+  filler_internal_dto.MappingCreate:
+    properties:
+      coefficient:
+        example: "1.5"
+        type: string
+      frequency:
+        description: Строковый энум
+        example: MEDIUM
+        type: string
+      indicator_id:
+        example: 2
+        type: integer
+      param_id:
+        example: 5
+        type: integer
+    required:
+    - frequency
+    - indicator_id
+    - param_id
+    type: object
+  filler_internal_dto.MappingUpdate:
+    properties:
+      coefficient:
+        example: "2.0"
+        type: string
+      frequency:
+        example: HIGH
+        type: string
+      indicator_id:
+        example: 2
+        type: integer
+      param_id:
+        example: 5
+        type: integer
+    required:
+    - frequency
+    - indicator_id
+    - param_id
     type: object
   filler_internal_dto.OidPageResponse:
     properties:
@@ -270,6 +349,29 @@ definitions:
         example: Модуль Питания
         type: string
     type: object
+  filler_internal_model.DeviceComponent:
+    properties:
+      components:
+        items:
+          $ref: '#/definitions/filler_internal_model.DeviceComponent'
+        type: array
+      id:
+        example: 1
+        type: integer
+      internal_order:
+        example: 1
+        type: integer
+      mappings:
+        items:
+          $ref: '#/definitions/filler_internal_model.Mapping'
+        type: array
+      model_id:
+        example: 10
+        type: integer
+      parent_id:
+        example: 3
+        type: integer
+    type: object
   filler_internal_model.DeviceIndicator:
     properties:
       contact:
@@ -292,6 +394,26 @@ definitions:
         type: string
       services:
         example: 12
+        type: integer
+    type: object
+  filler_internal_model.Mapping:
+    properties:
+      coefficient:
+        example: "1.500000000000"
+        type: string
+      enum:
+        type: object
+      frequency:
+        example: MEDIUM
+        type: string
+      id:
+        example: 1
+        type: integer
+      indicator_id:
+        example: 2
+        type: integer
+      param_id:
+        example: 5
         type: integer
     type: object
   filler_internal_model.Oid:
@@ -611,6 +733,138 @@ paths:
       summary: Поиск компонентов по подстроке
       tags:
       - '1. Модельный каталог: Компоненты'
+  /api/v1/device-components:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/filler_internal_model.DeviceComponent'
+            type: array
+      summary: Получить всю структуру подчиненности устройств
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные узла
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.DeviceComponentCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/filler_internal_model.DeviceComponent'
+      summary: Создать узел состава устройства
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+  /api/v1/device-components/{id}:
+    delete:
+      parameters:
+      - description: ID Узла
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Удалить узел состава по ID
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+    get:
+      parameters:
+      - description: ID Узла
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filler_internal_model.DeviceComponent'
+      summary: Получить узел состава по ID
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Узла
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.DeviceComponentUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filler_internal_model.DeviceComponent'
+      summary: Обновить узел состава по ID
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+  /api/v1/device-components/bind:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные связывания
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.BindDeviceMappingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Связать узел устройства с маппингом
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
+  /api/v1/device-components/bind/{deviceComponentId}/{mappingId}:
+    delete:
+      parameters:
+      - description: ID Узла
+        in: path
+        name: deviceComponentId
+        required: true
+        type: integer
+      - description: ID Маппинга
+        in: path
+        name: mappingId
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      summary: Удалить связь узла устройства с маппингом
+      tags:
+      - '8. Конфигурация: Структура компонентов устройства'
   /api/v1/indicators:
     get:
       produces:
@@ -773,6 +1027,168 @@ paths:
       summary: Обновить индикатор по ID
       tags:
       - '5. Конфигурация: Индикаторы устройств'
+  /api/v1/mappings:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/filler_internal_model.Mapping'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить все маппинги
+      tags:
+      - '7. Конфигурация: Сопоставления параметров'
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные маппинга
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.MappingCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/filler_internal_model.Mapping'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать маппинг
+      tags:
+      - '7. Конфигурация: Сопоставления параметров'
+  /api/v1/mappings/{id}:
+    delete:
+      parameters:
+      - description: ID Маппинга
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить маппинг по ID
+      tags:
+      - '7. Конфигурация: Сопоставления параметров'
+    get:
+      parameters:
+      - description: ID Маппинга
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filler_internal_model.Mapping'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить маппинг по ID
+      tags:
+      - '7. Конфигурация: Сопоставления параметров'
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID Маппинга
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.MappingUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filler_internal_model.Mapping'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить маппинг по ID
+      tags:
+      - '7. Конфигурация: Сопоставления параметров'
   /api/v1/oids/exact:
     get:
       parameters:
@@ -1359,3 +1775,5 @@ tags:
 - name: '4. Парсер: OID'
 - name: '5. Конфигурация: Индикаторы устройств'
 - name: '6. Конфигурация: Индикаторы параметров'
+- name: '7. Конфигурация: Сопоставления параметров'
+- name: '8. Конфигурация: Структура компонентов устройства'

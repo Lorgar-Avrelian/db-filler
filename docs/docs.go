@@ -324,6 +324,210 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/device-components": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Получить всю структуру подчиненности устройств",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filler_internal_model.DeviceComponent"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Создать узел состава устройства",
+                "parameters": [
+                    {
+                        "description": "Данные узла",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.DeviceComponentCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.DeviceComponent"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/device-components/bind": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Связать узел устройства с маппингом",
+                "parameters": [
+                    {
+                        "description": "Данные связывания",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.BindDeviceMappingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/device-components/bind/{deviceComponentId}/{mappingId}": {
+            "delete": {
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Удалить связь узла устройства с маппингом",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Узла",
+                        "name": "deviceComponentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID Маппинга",
+                        "name": "mappingId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/api/v1/device-components/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Получить узел состава по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Узла",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.DeviceComponent"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Обновить узел состава по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Узла",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новые данные",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.DeviceComponentUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.DeviceComponent"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "8. Конфигурация: Структура компонентов устройства"
+                ],
+                "summary": "Удалить узел состава по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Узла",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    }
+                }
+            }
+        },
         "/api/v1/indicators": {
             "get": {
                 "produces": [
@@ -532,6 +736,253 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "ID Индикатора",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mappings": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "7. Конфигурация: Сопоставления параметров"
+                ],
+                "summary": "Получить все маппинги",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filler_internal_model.Mapping"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "7. Конфигурация: Сопоставления параметров"
+                ],
+                "summary": "Создать маппинг",
+                "parameters": [
+                    {
+                        "description": "Данные маппинга",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.MappingCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.Mapping"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mappings/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "7. Конфигурация: Сопоставления параметров"
+                ],
+                "summary": "Получить маппинг по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Маппинга",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.Mapping"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "7. Конфигурация: Сопоставления параметров"
+                ],
+                "summary": "Обновить маппинг по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Маппинга",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новые данные",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.MappingUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_model.Mapping"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "7. Конфигурация: Сопоставления параметров"
+                ],
+                "summary": "Удалить маппинг по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Маппинга",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1446,6 +1897,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "filler_internal_dto.BindDeviceMappingRequest": {
+            "type": "object",
+            "required": [
+                "device_component_id",
+                "mapping_id"
+            ],
+            "properties": {
+                "device_component_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "mapping_id": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
         "filler_internal_dto.BindParamRequest": {
             "type": "object",
             "required": [
@@ -1541,6 +2009,46 @@ const docTemplate = `{
                 }
             }
         },
+        "filler_internal_dto.DeviceComponentCreate": {
+            "type": "object",
+            "required": [
+                "model_id"
+            ],
+            "properties": {
+                "internal_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "model_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "parent_id": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "filler_internal_dto.DeviceComponentUpdate": {
+            "type": "object",
+            "required": [
+                "model_id"
+            ],
+            "properties": {
+                "internal_order": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "model_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "parent_id": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
         "filler_internal_dto.DeviceIndicatorCreate": {
             "type": "object",
             "properties": {
@@ -1596,6 +2104,59 @@ const docTemplate = `{
                 "services": {
                     "type": "integer",
                     "example": 74
+                }
+            }
+        },
+        "filler_internal_dto.MappingCreate": {
+            "type": "object",
+            "required": [
+                "frequency",
+                "indicator_id",
+                "param_id"
+            ],
+            "properties": {
+                "coefficient": {
+                    "type": "string",
+                    "example": "1.5"
+                },
+                "frequency": {
+                    "description": "Строковый энум",
+                    "type": "string",
+                    "example": "MEDIUM"
+                },
+                "indicator_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "param_id": {
+                    "type": "integer",
+                    "example": 5
+                }
+            }
+        },
+        "filler_internal_dto.MappingUpdate": {
+            "type": "object",
+            "required": [
+                "frequency",
+                "indicator_id",
+                "param_id"
+            ],
+            "properties": {
+                "coefficient": {
+                    "type": "string",
+                    "example": "2.0"
+                },
+                "frequency": {
+                    "type": "string",
+                    "example": "HIGH"
+                },
+                "indicator_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "param_id": {
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -1817,6 +2378,39 @@ const docTemplate = `{
                 }
             }
         },
+        "filler_internal_model.DeviceComponent": {
+            "type": "object",
+            "properties": {
+                "components": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filler_internal_model.DeviceComponent"
+                    }
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "internal_order": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "mappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filler_internal_model.Mapping"
+                    }
+                },
+                "model_id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "parent_id": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
         "filler_internal_model.DeviceIndicator": {
             "type": "object",
             "properties": {
@@ -1847,6 +2441,34 @@ const docTemplate = `{
                 "services": {
                     "type": "integer",
                     "example": 12
+                }
+            }
+        },
+        "filler_internal_model.Mapping": {
+            "type": "object",
+            "properties": {
+                "coefficient": {
+                    "type": "string",
+                    "example": "1.500000000000"
+                },
+                "enum": {
+                    "type": "object"
+                },
+                "frequency": {
+                    "type": "string",
+                    "example": "MEDIUM"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "indicator_id": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "param_id": {
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
@@ -2006,6 +2628,12 @@ const docTemplate = `{
         },
         {
             "name": "6. Конфигурация: Индикаторы параметров"
+        },
+        {
+            "name": "7. Конфигурация: Сопоставления параметров"
+        },
+        {
+            "name": "8. Конфигурация: Структура компонентов устройства"
         }
     ]
 }`

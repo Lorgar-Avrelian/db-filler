@@ -96,3 +96,21 @@ type ParamIndicator struct {
 	DotterNotation *string `json:"dotter_notation,omitempty" example:"1.3.6.1.2.1.1.1.0"`
 	Oid            *Oid    `json:"oid,omitempty"`
 }
+
+type Mapping struct {
+	ID          int64            `json:"id" example:"1"`
+	IndicatorID int64            `json:"indicator_id" example:"2"`
+	ParamID     int64            `json:"param_id" example:"5"`
+	Frequency   PollingFrequency `json:"frequency" swaggertype:"primitive,string" example:"MEDIUM"`
+	Coefficient *string          `json:"coefficient,omitempty" example:"1.500000000000"`
+	Enum        json.RawMessage  `json:"enum,omitempty" swaggertype:"primitive,object"`
+}
+
+type DeviceComponent struct {
+	ID            int64             `json:"id" example:"1"`
+	ModelID       int64             `json:"model_id" example:"10"`
+	InternalOrder int32             `json:"internal_order" example:"1"`
+	ParentID      *int64            `json:"parent_id,omitempty" example:"3"`
+	Mappings      []Mapping         `json:"mappings"`
+	Components    []DeviceComponent `json:"components"`
+}

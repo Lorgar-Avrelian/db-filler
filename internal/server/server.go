@@ -74,6 +74,26 @@ func NewServer() *Server {
 			paramIndicators.PUT("/:id", UpdateParamIndicator)
 			paramIndicators.DELETE("/:id", DeleteParamIndicator)
 		}
+
+		mappings := v1.Group("/mappings")
+		{
+			mappings.POST("", CreateMapping)
+			mappings.GET("", GetAllMappings)
+			mappings.GET("/:id", GetMapping)
+			mappings.PUT("/:id", UpdateMapping)
+			mappings.DELETE("/:id", DeleteMapping)
+		}
+
+		deviceComponents := v1.Group("/device-components")
+		{
+			deviceComponents.POST("", CreateDeviceComponent)
+			deviceComponents.GET("", GetAllDeviceComponents)
+			deviceComponents.POST("/bind", BindDeviceMapping)
+			deviceComponents.GET("/:id", GetDeviceComponent)
+			deviceComponents.PUT("/:id", UpdateDeviceComponent)
+			deviceComponents.DELETE("/:id", DeleteDeviceComponent)
+			deviceComponents.DELETE("/bind/:deviceComponentId/:mappingId", UnbindDeviceMapping)
+		}
 	}
 
 	return &Server{router: r}

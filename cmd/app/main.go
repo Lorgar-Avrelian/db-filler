@@ -20,6 +20,8 @@ import (
 // @tag.name        4. Парсер: OID
 // @tag.name        5. Конфигурация: Индикаторы устройств
 // @tag.name        6. Конфигурация: Индикаторы параметров
+// @tag.name        7. Конфигурация: Сопоставления параметров
+// @tag.name        8. Конфигурация: Структура компонентов устройства
 // @contact.name    Lorgar Avrelian
 // @contact.url     https://github.com/Lorgar-Avrelian
 // @contact.email   victor-14-244@mail.ru

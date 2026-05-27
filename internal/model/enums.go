@@ -170,3 +170,12 @@ func (v *VarType) UnmarshalJSON(b []byte) error {
 	*v = ParseVarType(strings.Trim(string(b), `"`))
 	return nil
 }
+
+func (p PollingFrequency) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%q", p.String())), nil
+}
+
+func (p *PollingFrequency) UnmarshalJSON(b []byte) error {
+	*p = ParsePollingFrequency(strings.Trim(string(b), `"`))
+	return nil
+}
