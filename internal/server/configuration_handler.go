@@ -35,8 +35,8 @@ func CreateConfiguration(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ind, dc, _ := dao.GetDetailedConfigByID(c.Request.Context(), id)
-	c.JSON(http.StatusCreated, model.Configuration{ID: id, Indicator: ind, DeviceComponent: dc})
+	ind, dc, th, _ := dao.GetDetailedConfigByID(c.Request.Context(), id)
+	c.JSON(http.StatusCreated, model.Configuration{ID: id, Indicator: ind, DeviceComponent: dc, Thresholds: th})
 }
 
 // GetConfiguration возвращает конфигурацию по ID
@@ -50,7 +50,7 @@ func CreateConfiguration(c *gin.Context) {
 // @Router          /api/v1/configurations/{id} [get]
 func GetConfiguration(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-	ind, dc, err := dao.GetDetailedConfigByID(c.Request.Context(), id)
+	ind, dc, th, err := dao.GetDetailedConfigByID(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -59,7 +59,7 @@ func GetConfiguration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Конфигурация не найдена"})
 		return
 	}
-	c.JSON(http.StatusOK, model.Configuration{ID: id, Indicator: ind, DeviceComponent: dc})
+	c.JSON(http.StatusOK, model.Configuration{ID: id, Indicator: ind, DeviceComponent: dc, Thresholds: th})
 }
 
 // GetAllConfigurations возвращает все конфигурации
@@ -106,12 +106,12 @@ func UpdateConfiguration(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Конфигурация не найдена для обновления"})
 		return
 	}
-	ind, dc, _ := dao.GetDetailedConfigByID(c.Request.Context(), updatedID)
-	c.JSON(http.StatusOK, model.Configuration{ID: updatedID, Indicator: ind, DeviceComponent: dc})
+	ind, dc, th, _ := dao.GetDetailedConfigByID(c.Request.Context(), updatedID)
+	c.JSON(http.StatusOK, model.Configuration{ID: updatedID, Indicator: ind, DeviceComponent: dc, Thresholds: th})
 }
 
 // DeleteConfiguration удаляет конфигурацию по ID
-// @Summary         Удалить рабочую configuration по ID
+// @Summary         Удалить рабочую конфигурацию по ID
 // @Tags            10. Конфигурация: Конфигурации устройств
 // @Param           id   path      int  true  "ID Конфигурации"
 // @Success         204  "No Content"
@@ -132,49 +132,51 @@ func DeleteConfiguration(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-// BindConfigurationThreshold связывает рабочую конфигурацию с порогом
-// @Summary         Связать конфигурацию с порогом
+// BindConfigThreshold связывает рабочую конфигурацию с порогом
+// @Summary         Привязать порог к рабочей конфигурации
 // @Tags            10. Конфигурация: Конфигурации устройств
 // @Accept          json
 // @Produce         json
-// @Param           request body dto.BindConfigThresholdRequest true "Данные связывания"
+// @Param           request body dto.BindParamRequest true "ID конфигурации и ID порога (используем BindParamRequest для совместимости структуры)"
 // @Success         200  {object}  map[string]string
+// @Failure         400  {object}  map[string]string
+// @Failure         500  {object}  map[string]string
 // @Router          /api/v1/configurations/bind [post]
-func BindConfigurationThreshold(c *gin.Context) {
-	var input dto.BindConfigThresholdRequest
+func BindConfigThreshold(c *gin.Context) {
+	var input struct {
+		ConfigurationID int64 `json:"configuration_id" binding:"required"`
+		ThresholdID     int64 `json:"threshold_id" binding:"required"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := dao.BindConfigurationThreshold(c.Request.Context(), input)
-	if err != nil {
+	if err := dao.BindConfigThreshold(c.Request.Context(), input.ConfigurationID, input.ThresholdID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Порог успешно привязан к рабочей конфигурации"})
 }
 
-// UnbindConfigurationThreshold разрывает связь рабочей конфигурации с порогом
-// @Summary         Удалить связь конфигурации с порогом
+// UnbindConfigThreshold разрывает связь рабочей конфигурации с порогом
+// @Summary         Удалить связь рабочей конфигурации с порогом
 // @Tags            10. Конфигурация: Конфигурации устройств
-// @Param           configurationId path      int  true  "ID Конфигурации"
+// @Param           configurationId path      int  true  "ID Рабочей конфигурации"
 // @Param           thresholdId     path      int  true  "ID Порога"
 // @Success         204  "No Content"
+// @Failure         404  {object}  map[string]string
+// @Failure         500  {object}  map[string]string
 // @Router          /api/v1/configurations/bind/{configurationId}/{thresholdId} [delete]
-func UnbindConfigurationThreshold(c *gin.Context) {
-	configID, errCfg := strconv.ParseInt(c.Param("configurationId"), 10, 64)
-	thresholdID, errT := strconv.ParseInt(c.Param("thresholdId"), 10, 64)
-	if errCfg != nil || errT != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверные ID конфигураций или порогов"})
-		return
-	}
-	found, err := dao.UnbindConfigurationThreshold(c.Request.Context(), configID, thresholdID)
+func UnbindConfigThreshold(c *gin.Context) {
+	cfgID, _ := strconv.ParseInt(c.Param("configurationId"), 10, 64)
+	tID, _ := strconv.ParseInt(c.Param("thresholdId"), 10, 64)
+	found, err := dao.UnbindConfigThreshold(c.Request.Context(), cfgID, tID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if !found {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Указанная связь не найдена"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Связь не найдена"})
 		return
 	}
 	c.Status(http.StatusNoContent)

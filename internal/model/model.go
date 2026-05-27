@@ -119,12 +119,14 @@ type Configuration struct {
 	ID              int64            `json:"id" example:"1"`
 	Indicator       *DeviceIndicator `json:"indicator"`
 	DeviceComponent *DeviceComponent `json:"device_component,omitempty"`
+	Thresholds      []Threshold      `json:"thresholds"`
 }
 
 type DefaultConfiguration struct {
 	ID              int64            `json:"id" example:"1"`
 	Indicator       *DeviceIndicator `json:"indicator"`
 	DeviceComponent *DeviceComponent `json:"device_component,omitempty"`
+	Thresholds      []Threshold      `json:"thresholds"`
 }
 
 type Threshold struct {

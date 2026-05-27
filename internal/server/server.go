@@ -14,8 +14,10 @@ type Server struct {
 }
 
 func NewServer() *Server {
-	r := gin.Default()
-
+	gin.SetMode(gin.ReleaseMode)
+	//r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 	r.Static("/docs", "./docs")
 
 	url := ginSwagger.URL("/docs/swagger.json")
@@ -99,8 +101,8 @@ func NewServer() *Server {
 		{
 			configurations.POST("", CreateConfiguration)
 			configurations.GET("", GetAllConfigurations)
-			configurations.POST("/bind", BindConfigurationThreshold)
-			configurations.DELETE("/bind/:configurationId/:thresholdId", UnbindConfigurationThreshold)
+			configurations.POST("/bind", BindConfigThreshold)
+			configurations.DELETE("/bind/:configurationId/:thresholdId", UnbindConfigThreshold)
 			configurations.GET("/:id", GetConfiguration)
 			configurations.PUT("/:id", UpdateConfiguration)
 			configurations.DELETE("/:id", DeleteConfiguration)
@@ -110,8 +112,8 @@ func NewServer() *Server {
 		{
 			defaultConfigurations.POST("", CreateDefaultConfiguration)
 			defaultConfigurations.GET("", GetAllDefaultConfigurations)
-			defaultConfigurations.POST("/bind", BindDefaultConfigurationThreshold)
-			defaultConfigurations.DELETE("/bind/:defaultConfigurationId/:thresholdId", UnbindDefaultConfigurationThreshold)
+			defaultConfigurations.POST("/bind", BindDefaultConfigThreshold)
+			defaultConfigurations.DELETE("/bind/:defaultConfigurationId/:thresholdId", UnbindDefaultConfigThreshold)
 			defaultConfigurations.GET("/:id", GetDefaultConfiguration)
 			defaultConfigurations.PUT("/:id", UpdateDefaultConfiguration)
 			defaultConfigurations.DELETE("/:id", DeleteDefaultConfiguration)

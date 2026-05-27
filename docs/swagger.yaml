@@ -1,28 +1,4 @@
 definitions:
-  filler_internal_dto.BindConfigThresholdRequest:
-    properties:
-      configuration_id:
-        example: 1
-        type: integer
-      threshold_id:
-        example: 5
-        type: integer
-    required:
-    - configuration_id
-    - threshold_id
-    type: object
-  filler_internal_dto.BindDefaultConfigThresholdRequest:
-    properties:
-      default_configuration_id:
-        example: 1
-        type: integer
-      threshold_id:
-        example: 5
-        type: integer
-    required:
-    - default_configuration_id
-    - threshold_id
-    type: object
   filler_internal_dto.BindDeviceMappingRequest:
     properties:
       device_component_id:
@@ -500,6 +476,10 @@ definitions:
         type: integer
       indicator:
         $ref: '#/definitions/filler_internal_model.DeviceIndicator'
+      thresholds:
+        items:
+          $ref: '#/definitions/filler_internal_model.Threshold'
+        type: array
     type: object
   filler_internal_model.DefaultConfiguration:
     properties:
@@ -510,6 +490,10 @@ definitions:
         type: integer
       indicator:
         $ref: '#/definitions/filler_internal_model.DeviceIndicator'
+      thresholds:
+        items:
+          $ref: '#/definitions/filler_internal_model.Threshold'
+        type: array
     type: object
   filler_internal_model.DeviceComponent:
     properties:
@@ -1014,7 +998,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Удалить рабочую configuration по ID
+      summary: Удалить рабочую конфигурацию по ID
       tags:
       - '10. Конфигурация: Конфигурации устройств'
     get:
@@ -1094,12 +1078,13 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Данные связывания
+      - description: ID конфигурации и ID порога (используем BindParamRequest для
+          совместимости структуры)
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/filler_internal_dto.BindConfigThresholdRequest'
+          $ref: '#/definitions/filler_internal_dto.BindParamRequest'
       produces:
       - application/json
       responses:
@@ -1109,13 +1094,25 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Связать конфигурацию с порогом
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Привязать порог к рабочей конфигурации
       tags:
       - '10. Конфигурация: Конфигурации устройств'
   /api/v1/configurations/bind/{configurationId}/{thresholdId}:
     delete:
       parameters:
-      - description: ID Конфигурации
+      - description: ID Рабочей конфигурации
         in: path
         name: configurationId
         required: true
@@ -1128,7 +1125,19 @@ paths:
       responses:
         "204":
           description: No Content
-      summary: Удалить связь конфигурации с порогом
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить связь рабочей конфигурации с порогом
       tags:
       - '10. Конфигурация: Конфигурации устройств'
   /api/v1/default-configurations:
@@ -1286,12 +1295,12 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Данные связывания
+      - description: ID конфигурации и ID порога
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/filler_internal_dto.BindDefaultConfigThresholdRequest'
+          $ref: '#/definitions/filler_internal_dto.BindParamRequest'
       produces:
       - application/json
       responses:
@@ -1301,13 +1310,25 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Связать дефолтную конфигурацию с порогом
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Привязать порог к дефолтной конфигурации
       tags:
       - '9. Конфигурация: Конфигурации по-умолчанию'
   /api/v1/default-configurations/bind/{defaultConfigurationId}/{thresholdId}:
     delete:
       parameters:
-      - description: ID Дефолтной Конфигурации
+      - description: ID Дефолтной конфигурации
         in: path
         name: defaultConfigurationId
         required: true
@@ -1320,7 +1341,19 @@ paths:
       responses:
         "204":
           description: No Content
-      summary: Удалить связь дефолтной конфигурацию с порогом
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить связь дефолтной конфигурации с порогом
       tags:
       - '9. Конфигурация: Конфигурации по-умолчанию'
   /api/v1/device-components:

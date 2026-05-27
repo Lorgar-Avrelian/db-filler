@@ -415,21 +415,39 @@ const docTemplate = `{
                 "tags": [
                     "10. Конфигурация: Конфигурации устройств"
                 ],
-                "summary": "Связать конфигурацию с порогом",
+                "summary": "Привязать порог к рабочей конфигурации",
                 "parameters": [
                     {
-                        "description": "Данные связывания",
+                        "description": "ID конфигурации и ID порога (используем BindParamRequest для совместимости структуры)",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/filler_internal_dto.BindConfigThresholdRequest"
+                            "$ref": "#/definitions/filler_internal_dto.BindParamRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -445,11 +463,11 @@ const docTemplate = `{
                 "tags": [
                     "10. Конфигурация: Конфигурации устройств"
                 ],
-                "summary": "Удалить связь конфигурации с порогом",
+                "summary": "Удалить связь рабочей конфигурации с порогом",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID Конфигурации",
+                        "description": "ID Рабочей конфигурации",
                         "name": "configurationId",
                         "in": "path",
                         "required": true
@@ -465,6 +483,24 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -583,7 +619,7 @@ const docTemplate = `{
                 "tags": [
                     "10. Конфигурация: Конфигурации устройств"
                 ],
-                "summary": "Удалить рабочую configuration по ID",
+                "summary": "Удалить рабочую конфигурацию по ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -709,21 +745,39 @@ const docTemplate = `{
                 "tags": [
                     "9. Конфигурация: Конфигурации по-умолчанию"
                 ],
-                "summary": "Связать дефолтную конфигурацию с порогом",
+                "summary": "Привязать порог к дефолтной конфигурации",
                 "parameters": [
                     {
-                        "description": "Данные связывания",
+                        "description": "ID конфигурации и ID порога",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/filler_internal_dto.BindDefaultConfigThresholdRequest"
+                            "$ref": "#/definitions/filler_internal_dto.BindParamRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -739,11 +793,11 @@ const docTemplate = `{
                 "tags": [
                     "9. Конфигурация: Конфигурации по-умолчанию"
                 ],
-                "summary": "Удалить связь дефолтной конфигурацию с порогом",
+                "summary": "Удалить связь дефолтной конфигурации с порогом",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID Дефолтной Конфигурации",
+                        "description": "ID Дефолтной конфигурации",
                         "name": "defaultConfigurationId",
                         "in": "path",
                         "required": true
@@ -759,6 +813,24 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -2723,40 +2795,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "filler_internal_dto.BindConfigThresholdRequest": {
-            "type": "object",
-            "required": [
-                "configuration_id",
-                "threshold_id"
-            ],
-            "properties": {
-                "configuration_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "threshold_id": {
-                    "type": "integer",
-                    "example": 5
-                }
-            }
-        },
-        "filler_internal_dto.BindDefaultConfigThresholdRequest": {
-            "type": "object",
-            "required": [
-                "default_configuration_id",
-                "threshold_id"
-            ],
-            "properties": {
-                "default_configuration_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "threshold_id": {
-                    "type": "integer",
-                    "example": 5
-                }
-            }
-        },
         "filler_internal_dto.BindDeviceMappingRequest": {
             "type": "object",
             "required": [
@@ -3408,6 +3446,12 @@ const docTemplate = `{
                 },
                 "indicator": {
                     "$ref": "#/definitions/filler_internal_model.DeviceIndicator"
+                },
+                "thresholds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filler_internal_model.Threshold"
+                    }
                 }
             }
         },
@@ -3423,6 +3467,12 @@ const docTemplate = `{
                 },
                 "indicator": {
                     "$ref": "#/definitions/filler_internal_model.DeviceIndicator"
+                },
+                "thresholds": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filler_internal_model.Threshold"
+                    }
                 }
             }
         },

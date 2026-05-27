@@ -35,7 +35,7 @@ func main() {
 	configPath := "cmd/config.yml"
 	config.Init(configPath)
 	logger.Init(config.Get().Logger.Level)
-	generateSwagger()
+	//generateSwagger()
 	database.Init()
 	if err := dao.LoadEnumsFromDB(context.Background()); err != nil {
 		logger.Fatalf("Критическая ошибка при загрузке справочников энумов из БД: %v", err)
