@@ -38,7 +38,7 @@ func main() {
 	//generateSwagger()
 	database.Init()
 	if err := dao.LoadEnumsFromDB(context.Background()); err != nil {
-		logger.Fatalf("Критическая ошибка при загрузке справочников энумов из БД: %v", err)
+		logger.Fatalf("Критическая ошибка при загрузке справочников enum из БД: %v", err)
 	}
 	srv := server.NewServer()
 	logger.Info("Запуск HTTP-сервера на порту %d...", config.Get().Server.Port)

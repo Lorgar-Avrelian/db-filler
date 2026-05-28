@@ -3,13 +3,13 @@ package dto
 import "filler/internal/model"
 
 type ComponentCreate struct {
-	Title         string `json:"title" binding:"required" example:"Модуль Питания"`
-	NameEn        string `json:"name_en" binding:"required" example:"power_module"`
-	NameRu        string `json:"name_ru" binding:"required" example:"модуль_питания"`
+	Title         string `json:"title" binding:"required" example:"physical"`
+	NameEn        string `json:"name_en" binding:"required" example:"Physical device"`
+	NameRu        string `json:"name_ru" binding:"required" example:"Физическое устройство"`
 	BaseComponent *int64 `json:"base_component,omitempty" example:"1"`
-	DescriptionEn string `json:"description_en,omitempty" example:"Main power controller unit"`
-	DescriptionRu string `json:"description_ru,omitempty" example:"Главный контроллер питания"`
-	Access        string `json:"access" binding:"required" example:"ADMIN"`
+	DescriptionEn string `json:"description_en,omitempty" example:"Physical device - Device with dimensional characteristics"`
+	DescriptionRu string `json:"description_ru,omitempty" example:"Физическое устройство - устройство, имеющее габаритные характеристики"`
+	Access        string `json:"access" binding:"required" example:"USER"`
 }
 
 type ComponentUpdate struct {
@@ -19,20 +19,20 @@ type ComponentUpdate struct {
 	BaseComponent *int64 `json:"base_component,omitempty" example:"1"`
 	DescriptionEn string `json:"description_en,omitempty" example:"Updated main power controller unit"`
 	DescriptionRu string `json:"description_ru,omitempty" example:"Обновленный главный контроллер питания"`
-	Access        string `json:"access" binding:"required" example:"OWNER"`
+	Access        string `json:"access" binding:"required" example:"USER"`
 }
 
 type ParamCreate struct {
-	Title         string `json:"title" binding:"required" example:"Макс. Напряжение"`
-	NameEn        string `json:"name_en" binding:"required" example:"max_voltage"`
-	NameRu        string `json:"name_ru" binding:"required" example:"макс_напряжение"`
-	Type          string `json:"type" binding:"required" example:"INT"`
+	Title         string `json:"title" binding:"required" example:"voltage"`
+	NameEn        string `json:"name_en" binding:"required" example:"Voltage"`
+	NameRu        string `json:"name_ru" binding:"required" example:"Напряжение"`
+	Type          string `json:"type" binding:"required" example:"NUMERIC"`
 	Value         string `json:"value,omitempty" example:"220"`
-	DescriptionEn string `json:"description_en,omitempty" example:"Maximum operational voltage"`
-	DescriptionRu string `json:"description_ru,omitempty" example:"Максимальное рабочее напряжение"`
+	DescriptionEn string `json:"description_en,omitempty" example:"Operational Voltage"`
+	DescriptionRu string `json:"description_ru,omitempty" example:"Рабочее напряжение"`
 	UnitsEn       string `json:"units_en,omitempty" example:"V"`
 	UnitsRu       string `json:"units_ru,omitempty" example:"В"`
-	Access        string `json:"access" binding:"required" example:"ADMIN"`
+	Access        string `json:"access" binding:"required" example:"USER"`
 	Saved         bool   `json:"saved" example:"true"`
 	Visible       bool   `json:"visible" example:"true"`
 }

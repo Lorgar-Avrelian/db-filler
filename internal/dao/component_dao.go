@@ -26,7 +26,7 @@ func CreateComponent(ctx context.Context, d dto.ComponentCreate) (*model.Compone
 	accessIdx := model.ParseAccess(d.Access)
 	var c model.Component
 	var aRaw int16
-	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, baseComp, d.DescriptionEn, d.DescriptionRu, int16(accessIdx)).
+	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, baseComp, stringToNull(d.DescriptionEn), stringToNull(d.DescriptionRu), int16(accessIdx)).
 		Scan(&c.ID, &c.Title, &c.NameEn, &c.NameRu, &aRaw)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func UpdateComponent(ctx context.Context, id int64, d dto.ComponentUpdate) (*mod
 	accessIdx := model.ParseAccess(d.Access)
 	var c model.Component
 	var aRaw int16
-	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, baseComp, d.DescriptionEn, d.DescriptionRu, int16(accessIdx), id).
+	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, baseComp, stringToNull(d.DescriptionEn), stringToNull(d.DescriptionRu), int16(accessIdx), id).
 		Scan(&c.ID, &c.Title, &c.NameEn, &c.NameRu, &aRaw)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

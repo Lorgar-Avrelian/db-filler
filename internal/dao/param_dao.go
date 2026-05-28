@@ -20,10 +20,10 @@ func CreateParam(ctx context.Context, d dto.ParamCreate) (*model.Param, error) {
 	typeIdx := model.ParseVarType(d.Type)
 	accessIdx := model.ParseAccess(d.Access)
 	var p model.Param
-	var descEn, descRu, unEn, unRu sql.NullString
+	var valNull, descEn, descRu, unEn, unRu sql.NullString
 	var tRaw, aRaw int16
-	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, int16(typeIdx), d.Value, d.DescriptionEn, d.DescriptionRu, d.UnitsEn, d.UnitsRu, int16(accessIdx), d.Saved, d.Visible).
-		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
+	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, int16(typeIdx), stringToNull(d.Value), d.DescriptionEn, d.DescriptionRu, stringToNull(d.UnitsEn), stringToNull(d.UnitsRu), int16(accessIdx), d.Saved, d.Visible).
+		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
 	if err != nil {
 		return nil, err
 	}
@@ -40,10 +40,10 @@ func GetParamByID(ctx context.Context, id int64) (*model.Param, error) {
 	conn := database.Get()
 	query := `SELECT id, title, name_en, name_ru, type, value, description_en, description_ru, units_en, units_ru, access, saved, visible FROM public.param WHERE id = $1`
 	var p model.Param
-	var descEn, descRu, unEn, unRu sql.NullString
+	var valNull, descEn, descRu, unEn, unRu sql.NullString
 	var tRaw, aRaw int16
 	err := conn.QueryRow(ctx, query, id).
-		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
+		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -69,10 +69,10 @@ func UpdateParam(ctx context.Context, id int64, d dto.ParamUpdate) (*model.Param
 	typeIdx := model.ParseVarType(d.Type)
 	accessIdx := model.ParseAccess(d.Access)
 	var p model.Param
-	var descEn, descRu, unEn, unRu sql.NullString
+	var valNull, descEn, descRu, unEn, unRu sql.NullString
 	var tRaw, aRaw int16
-	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, int16(typeIdx), d.Value, d.DescriptionEn, d.DescriptionRu, d.UnitsEn, d.UnitsRu, int16(accessIdx), d.Saved, d.Visible, id).
-		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
+	err := conn.QueryRow(ctx, query, d.Title, d.NameEn, d.NameRu, int16(typeIdx), stringToNull(d.Value), stringToNull(d.DescriptionEn), stringToNull(d.DescriptionRu), stringToNull(d.UnitsEn), stringToNull(d.UnitsRu), int16(accessIdx), d.Saved, d.Visible, id).
+		Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil

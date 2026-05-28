@@ -130,3 +130,10 @@ func LoadEnumsFromDB(ctx context.Context) error {
 		len(accessMap), len(varTypeMap), len(pollMap), len(asn1Map), len(statusMap), len(oidAccessMap), len(logicMap), len(alarmMap), len(vendors))
 	return nil
 }
+
+func stringToNull(s string) sql.NullString {
+	return sql.NullString{
+		String: s,
+		Valid:  s != "",
+	}
+}
