@@ -33,6 +33,7 @@ func CreateParam(ctx context.Context, d dto.ParamCreate) (*model.Param, error) {
 	p.DescriptionRu = descRu.String
 	p.UnitsEn = unEn.String
 	p.UnitsRu = unRu.String
+	p.Value = valNull.String
 	return &p, nil
 }
 
@@ -56,6 +57,7 @@ func GetParamByID(ctx context.Context, id int64) (*model.Param, error) {
 	p.DescriptionRu = descRu.String
 	p.UnitsEn = unEn.String
 	p.UnitsRu = unRu.String
+	p.Value = valNull.String
 	return &p, nil
 }
 
@@ -85,6 +87,7 @@ func UpdateParam(ctx context.Context, id int64, d dto.ParamUpdate) (*model.Param
 	p.DescriptionRu = descRu.String
 	p.UnitsEn = unEn.String
 	p.UnitsRu = unRu.String
+	p.Value = valNull.String
 	return &p, nil
 }
 
@@ -103,9 +106,9 @@ func GetUnattachedParams(ctx context.Context) ([]model.Param, error) {
 	var params []model.Param
 	for rows.Next() {
 		var p model.Param
-		var descEn, descRu, unEn, unRu sql.NullString
+		var valNull, descEn, descRu, unEn, unRu sql.NullString
 		var tRaw, aRaw int16
-		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
+		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
 		if err != nil {
 			return nil, err
 		}
@@ -115,6 +118,7 @@ func GetUnattachedParams(ctx context.Context) ([]model.Param, error) {
 		p.DescriptionRu = descRu.String
 		p.UnitsEn = unEn.String
 		p.UnitsRu = unRu.String
+		p.Value = valNull.String
 		params = append(params, p)
 	}
 	return params, nil
@@ -139,9 +143,9 @@ func SearchParams(ctx context.Context, q string) ([]model.Param, error) {
 	var params []model.Param
 	for rows.Next() {
 		var p model.Param
-		var descEn, descRu, unEn, unRu sql.NullString
+		var valNull, descEn, descRu, unEn, unRu sql.NullString
 		var tRaw, aRaw int16
-		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
+		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &aRaw, &p.Saved, &p.Visible)
 		if err != nil {
 			return nil, err
 		}
@@ -151,6 +155,7 @@ func SearchParams(ctx context.Context, q string) ([]model.Param, error) {
 		p.DescriptionRu = descRu.String
 		p.UnitsEn = unEn.String
 		p.UnitsRu = unRu.String
+		p.Value = valNull.String
 		params = append(params, p)
 	}
 	return params, nil
