@@ -16,21 +16,39 @@ import (
 func CreateParamIndicator(ctx context.Context, d dto.ParamIndicatorCreate) (*model.ParamIndicator, error) {
 	conn := database.Get()
 	query := `
-		INSERT INTO public.param_indicator (oid_id, dotter_notation)
-		VALUES ($1, $2)
-		RETURNING id, oid_id, dotter_notation`
+		WITH inserted AS (
+			INSERT INTO public.param_indicator (oid_id, dotter_notation)
+			VALUES ($1, $2)
+			RETURNING id, oid_id, dotter_notation
+		)
+		SELECT 
+			i.id, i.oid_id, i.dotter_notation,
+			o.id, o.mib, o.type, o.name, o.number, o.dotter_notation, o.object_descriptor,
+			o.syntax, o.enum, o.status, o.access, o.units, o.description, o.category
+		FROM inserted i
+		LEFT JOIN public.oid o ON i.oid_id = o.id;`
 	var pi model.ParamIndicator
 	var dotter sql.NullString
 	var oID sql.NullString
 	var oMib sql.NullInt64
-	var oNum sql.NullInt32
 	var oType sql.NullInt16
-	var oName, oDotter, oDesc, oSyn, oUnits, oCat, oObj sql.NullString
-	var oStRaw, oAcRaw sql.NullInt16
+	var oName sql.NullString
+	var oNum sql.NullInt32
+	var oDotter sql.NullString
+	var oObj sql.NullString
+	var oSyn sql.NullString
 	var oEnumBytes []byte
+	var oStRaw sql.NullInt16
+	var oAcRaw sql.NullInt16
+	var oUnits sql.NullString
+	var oDesc sql.NullString
+	var oCat sql.NullString
 	err := conn.QueryRow(ctx, query, d.OidID, toNullString(d.DotterNotation)).
-		Scan(&pi.ID, &pi.OidID, &dotter,
-			&oID, &oMib, &oType, &oName, &oNum, &oDotter, &oObj, &oSyn, &oEnumBytes, &oStRaw, &oAcRaw, &oUnits, &oDesc, &oCat)
+		Scan(
+			&pi.ID, &pi.OidID, &dotter,
+			&oID, &oMib, &oType, &oName, &oNum, &oDotter, &oObj,
+			&oSyn, &oEnumBytes, &oStRaw, &oAcRaw, &oUnits, &oDesc, &oCat,
+		)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -213,14 +231,32 @@ func GetAllParamIndicators(ctx context.Context) ([]model.ParamIndicator, error) 
 func UpdateParamIndicator(ctx context.Context, id int64, d dto.ParamIndicatorUpdate) (*model.ParamIndicator, error) {
 	conn := database.Get()
 	query := `
-		UPDATE public.param_indicator 
-		SET oid_id = $1, dotter_notation = $2
-		WHERE id = $3
-		RETURNING id, oid_id, dotter_notation`
+		WITH updated AS (
+			UPDATE public.param_indicator 
+			SET oid_id = $1, dotter_notation = $2
+			WHERE id = $3
+			RETURNING id, oid_id, dotter_notation
+		)
+		SELECT 
+			u.id, u.oid_id, u.dotter_notation,
+			o.id, o.mib, o.type, o.name, o.number, o.dotter_notation, o.object_descriptor,
+			o.syntax, o.enum, o.status, o.access, o.units, o.description, o.category
+		FROM updated u
+		LEFT JOIN public.oid o ON u.oid_id = o.id;`
 	var pi model.ParamIndicator
 	var dotter sql.NullString
+	var oID sql.NullString
+	var oMib sql.NullInt64
+	var oType sql.NullInt16
+	var oNum sql.NullInt32 // Переменная добавлена
+	var oName, oDotter, oDesc, oSyn, oUnits, oCat, oObj sql.NullString
+	var oStRaw, oAcRaw sql.NullInt16
+	var oEnumBytes []byte
 	err := conn.QueryRow(ctx, query, d.OidID, toNullString(d.DotterNotation), id).
-		Scan(&pi.ID, &pi.OidID, &dotter)
+		Scan(
+			&pi.ID, &pi.OidID, &dotter,
+			&oID, &oMib, &oType, &oName, &oNum, &oDotter, &oObj, &oSyn, &oEnumBytes, &oStRaw, &oAcRaw, &oUnits, &oDesc, &oCat,
+		)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
@@ -229,6 +265,38 @@ func UpdateParamIndicator(ctx context.Context, id int64, d dto.ParamIndicatorUpd
 	}
 	if dotter.Valid {
 		pi.DotterNotation = &dotter.String
+	}
+	if oID.Valid && oID.String != "" {
+		parsedUUID, err := uuid.Parse(oID.String)
+		if err == nil {
+			o := model.Oid{ID: parsedUUID}
+			o.Type = model.Asn1Type(oType.Int16)
+			if oMib.Valid {
+				o.MibID = &oMib.Int64
+			}
+			if oNum.Valid {
+				o.Number = &oNum.Int32
+			}
+			o.Name = oName.String
+			o.DotterNotation = oDotter.String
+			o.ObjectDescriptor = oObj.String
+			o.Syntax = oSyn.String
+			if len(oEnumBytes) > 0 {
+				o.Enum = json.RawMessage(oEnumBytes)
+			}
+			o.Units = oUnits.String
+			o.Description = oDesc.String
+			o.Category = oCat.String
+			if oStRaw.Valid {
+				st := model.OidStatus(oStRaw.Int16)
+				o.Status = &st
+			}
+			if oAcRaw.Valid {
+				ac := model.OidAccess(oAcRaw.Int16)
+				o.Access = &ac
+			}
+			pi.Oid = &o
+		}
 	}
 	return &pi, nil
 }
