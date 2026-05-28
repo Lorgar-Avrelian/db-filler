@@ -68,9 +68,9 @@ func GetComponentByID(ctx context.Context, id int64) (*model.Component, error) {
 	var params []model.Param
 	for rows.Next() {
 		var p model.Param
-		var descEn, descRu, unEn, unRu sql.NullString
+		var valNull, descEn, descRu, unEn, unRu sql.NullString
 		var tRaw, paRaw int16
-		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &p.Value, &descEn, &descRu, &unEn, &unRu, &paRaw, &p.Saved, &p.Visible)
+		err := rows.Scan(&p.ID, &p.Title, &p.NameEn, &p.NameRu, &tRaw, &valNull, &descEn, &descRu, &unEn, &unRu, &paRaw, &p.Saved, &p.Visible)
 		if err != nil {
 			return nil, err
 		}
@@ -80,6 +80,7 @@ func GetComponentByID(ctx context.Context, id int64) (*model.Component, error) {
 		p.DescriptionRu = descRu.String
 		p.UnitsEn = unEn.String
 		p.UnitsRu = unRu.String
+		p.Value = valNull.String
 		params = append(params, p)
 	}
 	c.Params = params
