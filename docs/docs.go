@@ -1731,6 +1731,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/oids/exact-with-mib": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "4. Парсер: OID"
+                ],
+                "summary": "Поиск OID по dotter_notation и имени MIB",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Точная dotter_notation",
+                        "name": "notation",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Точное название MIB",
+                        "name": "mib",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filler_internal_model.Oid"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/oids/mib": {
             "get": {
                 "produces": [
@@ -2840,7 +2896,7 @@ const docTemplate = `{
             "properties": {
                 "access": {
                     "type": "string",
-                    "example": "ADMIN"
+                    "example": "USER"
                 },
                 "base_component": {
                     "type": "integer",
@@ -2848,23 +2904,23 @@ const docTemplate = `{
                 },
                 "description_en": {
                     "type": "string",
-                    "example": "Main power controller unit"
+                    "example": "Physical device - Device with dimensional characteristics"
                 },
                 "description_ru": {
                     "type": "string",
-                    "example": "Главный контроллер питания"
+                    "example": "Физическое устройство - устройство, имеющее габаритные характеристики"
                 },
                 "name_en": {
                     "type": "string",
-                    "example": "power_module"
+                    "example": "Physical device"
                 },
                 "name_ru": {
                     "type": "string",
-                    "example": "модуль_питания"
+                    "example": "Физическое устройство"
                 },
                 "title": {
                     "type": "string",
-                    "example": "Модуль Питания"
+                    "example": "physical"
                 }
             }
         },
@@ -2879,7 +2935,7 @@ const docTemplate = `{
             "properties": {
                 "access": {
                     "type": "string",
-                    "example": "OWNER"
+                    "example": "USER"
                 },
                 "base_component": {
                     "type": "integer",
@@ -3049,8 +3105,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "1.5"
                 },
+                "enum": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "frequency": {
-                    "description": "Строковый энум",
                     "type": "string",
                     "example": "MEDIUM"
                 },
@@ -3075,6 +3136,12 @@ const docTemplate = `{
                 "coefficient": {
                     "type": "string",
                     "example": "2.0"
+                },
+                "enum": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "frequency": {
                     "type": "string",
@@ -3125,23 +3192,23 @@ const docTemplate = `{
             "properties": {
                 "access": {
                     "type": "string",
-                    "example": "ADMIN"
+                    "example": "USER"
                 },
                 "description_en": {
                     "type": "string",
-                    "example": "Maximum operational voltage"
+                    "example": "Operational Voltage"
                 },
                 "description_ru": {
                     "type": "string",
-                    "example": "Максимальное рабочее напряжение"
+                    "example": "Рабочее напряжение"
                 },
                 "name_en": {
                     "type": "string",
-                    "example": "max_voltage"
+                    "example": "Voltage"
                 },
                 "name_ru": {
                     "type": "string",
-                    "example": "макс_напряжение"
+                    "example": "Напряжение"
                 },
                 "saved": {
                     "type": "boolean",
@@ -3149,11 +3216,11 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string",
-                    "example": "Макс. Напряжение"
+                    "example": "voltage"
                 },
                 "type": {
                     "type": "string",
-                    "example": "INT"
+                    "example": "NUMERIC"
                 },
                 "units_en": {
                     "type": "string",
@@ -3550,7 +3617,10 @@ const docTemplate = `{
                     "example": "1.500000000000"
                 },
                 "enum": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "frequency": {
                     "type": "string",

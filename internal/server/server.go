@@ -28,6 +28,7 @@ func NewServer() *Server {
 		oids := v1.Group("/oids")
 		{
 			oids.GET("/exact", GetOidsByExactNotation)
+			oids.GET("/exact-with-mib", GetOidsByDotterAndMib)
 			oids.GET("/prefix", GetOidsByPrefixNotation)
 			oids.GET("/mib", GetOidsByMib)
 			oids.GET("/vendor", GetOidsByVendor)

@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"filler/internal/database"
 	"filler/internal/logger"
 	"filler/internal/model"
@@ -136,4 +137,15 @@ func stringToNull(s string) sql.NullString {
 		String: s,
 		Valid:  s != "",
 	}
+}
+
+func mapToJSONB(m *map[string]string) ([]byte, error) {
+	if m == nil || len(*m) == 0 {
+		return nil, nil
+	}
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return bytes, nil
 }

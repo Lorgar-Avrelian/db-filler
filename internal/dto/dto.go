@@ -93,17 +93,19 @@ type ParamIndicatorUpdate struct {
 }
 
 type MappingCreate struct {
-	IndicatorID int64   `json:"indicator_id" binding:"required" example:"2"`
-	ParamID     int64   `json:"param_id" binding:"required" example:"5"`
-	Frequency   string  `json:"frequency" binding:"required" example:"MEDIUM"` // Строковый энум
-	Coefficient *string `json:"coefficient,omitempty" example:"1.5"`
+	IndicatorID int64              `json:"indicator_id" binding:"required" example:"2"`
+	ParamID     int64              `json:"param_id" binding:"required" example:"5"`
+	Frequency   string             `json:"frequency" binding:"required" example:"MEDIUM"`
+	Coefficient *string            `json:"coefficient,omitempty" example:"1.5"`
+	Enum        *map[string]string `json:"enum,omitempty"`
 }
 
 type MappingUpdate struct {
-	IndicatorID int64   `json:"indicator_id" binding:"required" example:"2"`
-	ParamID     int64   `json:"param_id" binding:"required" example:"5"`
-	Frequency   string  `json:"frequency" binding:"required" example:"HIGH"`
-	Coefficient *string `json:"coefficient,omitempty" example:"2.0"`
+	IndicatorID int64              `json:"indicator_id" binding:"required" example:"2"`
+	ParamID     int64              `json:"param_id" binding:"required" example:"5"`
+	Frequency   string             `json:"frequency" binding:"required" example:"HIGH"`
+	Coefficient *string            `json:"coefficient,omitempty" example:"2.0"`
+	Enum        *map[string]string `json:"enum,omitempty"`
 }
 
 type DeviceComponentCreate struct {

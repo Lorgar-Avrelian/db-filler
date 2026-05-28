@@ -106,3 +106,19 @@ func GetOidsByVendorID(ctx context.Context, vID model.VendorID) ([]model.Oid, er
 	defer rows.Close()
 	return scanOidRows(rows)
 }
+
+// GetOidsByDotterAndMibName возвращает OID по точному совпадению dotter_notation и имени MIB
+func GetOidsByDotterAndMibName(ctx context.Context, dotter string, mibName string) ([]model.Oid, error) {
+	conn := database.Get()
+	query := `
+		SELECT o.id, o.mib, o.type, o.name, o.number, o.dotter_notation, o.object_descriptor, o.syntax, o.enum, o.status, o.access, o.units, o.description, o.category 
+		FROM public.oid o
+		JOIN public.mib m ON o.mib = m.id
+		WHERE o.dotter_notation = $1 AND m.name = $2`
+	rows, err := conn.Query(ctx, query, dotter, mibName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanOidRows(rows)
+}

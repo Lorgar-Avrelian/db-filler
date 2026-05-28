@@ -26,25 +26,25 @@ definitions:
   filler_internal_dto.ComponentCreate:
     properties:
       access:
-        example: ADMIN
+        example: USER
         type: string
       base_component:
         example: 1
         type: integer
       description_en:
-        example: Main power controller unit
+        example: Physical device - Device with dimensional characteristics
         type: string
       description_ru:
-        example: Главный контроллер питания
+        example: Физическое устройство - устройство, имеющее габаритные характеристики
         type: string
       name_en:
-        example: power_module
+        example: Physical device
         type: string
       name_ru:
-        example: модуль_питания
+        example: Физическое устройство
         type: string
       title:
-        example: Модуль Питания
+        example: physical
         type: string
     required:
     - access
@@ -55,7 +55,7 @@ definitions:
   filler_internal_dto.ComponentUpdate:
     properties:
       access:
-        example: OWNER
+        example: USER
         type: string
       base_component:
         example: 1
@@ -178,8 +178,11 @@ definitions:
       coefficient:
         example: "1.5"
         type: string
+      enum:
+        additionalProperties:
+          type: string
+        type: object
       frequency:
-        description: Строковый энум
         example: MEDIUM
         type: string
       indicator_id:
@@ -198,6 +201,10 @@ definitions:
       coefficient:
         example: "2.0"
         type: string
+      enum:
+        additionalProperties:
+          type: string
+        type: object
       frequency:
         example: HIGH
         type: string
@@ -231,28 +238,28 @@ definitions:
   filler_internal_dto.ParamCreate:
     properties:
       access:
-        example: ADMIN
+        example: USER
         type: string
       description_en:
-        example: Maximum operational voltage
+        example: Operational Voltage
         type: string
       description_ru:
-        example: Максимальное рабочее напряжение
+        example: Рабочее напряжение
         type: string
       name_en:
-        example: max_voltage
+        example: Voltage
         type: string
       name_ru:
-        example: макс_напряжение
+        example: Напряжение
         type: string
       saved:
         example: true
         type: boolean
       title:
-        example: Макс. Напряжение
+        example: voltage
         type: string
       type:
-        example: INT
+        example: NUMERIC
         type: string
       units_en:
         example: V
@@ -548,6 +555,8 @@ definitions:
         example: "1.500000000000"
         type: string
       enum:
+        additionalProperties:
+          type: string
         type: object
       frequency:
         example: MEDIUM
@@ -1842,6 +1851,43 @@ paths:
               type: string
             type: object
       summary: Полноразмерный OID по dotter_notation
+      tags:
+      - '4. Парсер: OID'
+  /api/v1/oids/exact-with-mib:
+    get:
+      parameters:
+      - description: Точная dotter_notation
+        in: query
+        name: notation
+        required: true
+        type: string
+      - description: Точное название MIB
+        in: query
+        name: mib
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/filler_internal_model.Oid'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Поиск OID по dotter_notation и имени MIB
       tags:
       - '4. Парсер: OID'
   /api/v1/oids/mib:

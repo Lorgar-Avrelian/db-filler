@@ -173,3 +173,29 @@ func GetOidsByVendor(c *gin.Context) {
 		Items:      pagedItems,
 	})
 }
+
+// GetOidsByDotterAndMib возвращает OID по точному совпадению dotter_notation и имени MIB
+// @Summary         Поиск OID по dotter_notation и имени MIB
+// @Tags            4. Парсер: OID
+// @Produce         json
+// @Param           notation query    string  true  "Точная dotter_notation"
+// @Param           mib      query    string  true  "Точное название MIB"
+// @Success         200      {array}  model.Oid
+// @Failure         400      {object} map[string]string
+// @Failure         500      {object} map[string]string
+// @Router          /api/v1/oids/exact-with-mib [get]
+func GetOidsByDotterAndMib(c *gin.Context) {
+	notation := c.Query("notation")
+	mibName := c.Query("mib")
+	if notation == "" || mibName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Параметры 'notation' и 'mib' не могут быть пустыми"})
+		return
+	}
+	res, err := dao.GetOidsByDotterAndMibName(c.Request.Context(), notation, mibName)
+	if err != nil {
+		logger.Error("Ошибка DAO при выборке OID по dotter и MIB: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}

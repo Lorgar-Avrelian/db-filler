@@ -21,13 +21,56 @@ func CreateParamIndicator(ctx context.Context, d dto.ParamIndicatorCreate) (*mod
 		RETURNING id, oid_id, dotter_notation`
 	var pi model.ParamIndicator
 	var dotter sql.NullString
+	var oID sql.NullString
+	var oMib sql.NullInt64
+	var oNum sql.NullInt32
+	var oType sql.NullInt16
+	var oName, oDotter, oDesc, oSyn, oUnits, oCat, oObj sql.NullString
+	var oStRaw, oAcRaw sql.NullInt16
+	var oEnumBytes []byte
 	err := conn.QueryRow(ctx, query, d.OidID, toNullString(d.DotterNotation)).
-		Scan(&pi.ID, &pi.OidID, &dotter)
+		Scan(&pi.ID, &pi.OidID, &dotter,
+			&oID, &oMib, &oType, &oName, &oNum, &oDotter, &oObj, &oSyn, &oEnumBytes, &oStRaw, &oAcRaw, &oUnits, &oDesc, &oCat)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	if dotter.Valid {
 		pi.DotterNotation = &dotter.String
+	}
+	if oID.Valid && oID.String != "" {
+		parsedUUID, err := uuid.Parse(oID.String)
+		if err == nil {
+			o := model.Oid{ID: parsedUUID}
+			o.Type = model.Asn1Type(oType.Int16)
+			if oMib.Valid {
+				o.MibID = &oMib.Int64
+			}
+			if oNum.Valid {
+				o.Number = &oNum.Int32
+			}
+			o.Name = oName.String
+			o.DotterNotation = oDotter.String
+			o.ObjectDescriptor = oObj.String
+			o.Syntax = oSyn.String
+			if len(oEnumBytes) > 0 {
+				o.Enum = json.RawMessage(oEnumBytes)
+			}
+			o.Units = oUnits.String
+			o.Description = oDesc.String
+			o.Category = oCat.String
+			if oStRaw.Valid {
+				st := model.OidStatus(oStRaw.Int16)
+				o.Status = &st
+			}
+			if oAcRaw.Valid {
+				ac := model.OidAccess(oAcRaw.Int16)
+				o.Access = &ac
+			}
+			pi.Oid = &o
+		}
 	}
 	return &pi, nil
 }
