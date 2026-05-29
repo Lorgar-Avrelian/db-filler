@@ -564,12 +564,10 @@ definitions:
       id:
         example: 1
         type: integer
-      indicator_id:
-        example: 2
-        type: integer
-      param_id:
-        example: 5
-        type: integer
+      indicator:
+        $ref: '#/definitions/filler_internal_model.ParamIndicator'
+      param:
+        $ref: '#/definitions/filler_internal_model.Param'
     type: object
   filler_internal_model.Oid:
     properties:

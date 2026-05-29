@@ -136,6 +136,7 @@ func (l LogicOperator) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("%q", l.String())), nil
 }
 func (a AlarmLevel) MarshalJSON() ([]byte, error) { return []byte(fmt.Sprintf("%q", a.String())), nil }
+
 func (a *Access) UnmarshalJSON(b []byte) error {
 	*a = ParseAccess(strings.Trim(string(b), `"`))
 	return nil
@@ -154,6 +155,18 @@ func (l *LogicOperator) UnmarshalJSON(b []byte) error {
 }
 func (a *AlarmLevel) UnmarshalJSON(b []byte) error {
 	*a = ParseAlarmLevel(strings.Trim(string(b), `"`))
+	return nil
+}
+func (t *Asn1Type) UnmarshalJSON(b []byte) error {
+	*t = ParseAsn1Type(strings.Trim(string(b), `"`))
+	return nil
+}
+func (s *OidStatus) UnmarshalJSON(b []byte) error {
+	*s = ParseOidStatus(strings.Trim(string(b), `"`))
+	return nil
+}
+func (a *OidAccess) UnmarshalJSON(b []byte) error {
+	*a = ParseOidAccess(strings.Trim(string(b), `"`))
 	return nil
 }
 
@@ -198,6 +211,33 @@ func ParseAlarmLevel(s string) AlarmLevel {
 	defer mu.RUnlock()
 	s = strings.ToUpper(strings.TrimSpace(s))
 	if id, ok := alarmLevelIds[s]; ok {
+		return id
+	}
+	return 1
+}
+func ParseAsn1Type(s string) Asn1Type {
+	mu.RLock()
+	defer mu.RUnlock()
+	s = strings.ToUpper(strings.TrimSpace(s))
+	if id, ok := asn1TypeIds[s]; ok {
+		return id
+	}
+	return 1
+}
+func ParseOidStatus(s string) OidStatus {
+	mu.RLock()
+	defer mu.RUnlock()
+	s = strings.ToUpper(strings.TrimSpace(s))
+	if id, ok := oidStatusIds[s]; ok {
+		return id
+	}
+	return 1
+}
+func ParseOidAccess(s string) OidAccess {
+	mu.RLock()
+	defer mu.RUnlock()
+	s = strings.ToUpper(strings.TrimSpace(s))
+	if id, ok := oidAccessIds[s]; ok {
 		return id
 	}
 	return 1

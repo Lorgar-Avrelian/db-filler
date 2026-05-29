@@ -3630,13 +3630,11 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "indicator_id": {
-                    "type": "integer",
-                    "example": 2
+                "indicator": {
+                    "$ref": "#/definitions/filler_internal_model.ParamIndicator"
                 },
-                "param_id": {
-                    "type": "integer",
-                    "example": 5
+                "param": {
+                    "$ref": "#/definitions/filler_internal_model.Param"
                 }
             }
         },

@@ -151,12 +151,16 @@ func executeGenericConfigSelect(ctx context.Context, table string, idFilter int6
 			SELECT ct.%s AS cfg_id,
 			       json_strip_nulls(json_agg(json_build_object(
 				       'id', t.id, 'source_model', t.source_model, 'source_internal_order', t.source_internal_order,
-				       'source_param', t.source_param, 'value', t.value, 'type', t.type, 'operator', t.operator,
+				       'source_param', t.source_param, 'value', t.value, 'type', vt.value, 'operator', lo.value,
 				       'enabled', t.enabled, 'target_param', t.target_param, 'target_device', t.target_device,
-				       'level', t.level, 'prev_operator', t.prev_operator, 'previous_id', t.previous
+				       'level', al.value, 'prev_operator', lo_prev.value, 'previous_id', t.previous
 			       )) FILTER (WHERE t.id IS NOT NULL)) AS thresholds_json
 			FROM public.%s ct
 			JOIN public.threshold t ON ct.threshold_id = t.id
+			LEFT JOIN public.var_type vt ON t.type = vt.id
+			LEFT JOIN public.logic_operator lo ON t.operator = lo.id
+			LEFT JOIN public.alarm_level al ON t.level = al.id
+			LEFT JOIN public.logic_operator lo_prev ON t.prev_operator = lo_prev.id
 			GROUP BY ct.%s
 		)
 		SELECT 
@@ -164,7 +168,46 @@ func executeGenericConfigSelect(ctx context.Context, table string, idFilter int6
 			i.id, i.description, i.object_id, i.contact, i.name, i.location, i.services,
 			dt.id, dt.model, dt.internal_order, dt.parent,
 			json_strip_nulls(json_agg(json_build_object(
-				'id', m.id, 'indicator_id', m.indicator, 'param_id', m.param, 'frequency', m.frequency, 'coefficient', m.coefficient, 'enum', m.enum
+				'id', m.id,
+				'frequency', pf.value,
+				'coefficient', m.coefficient,
+				'enum', m.enum,
+				'param', json_build_object(
+					'id', p.id,
+					'title', p.title,
+					'name_en', p.name_en,
+					'name_ru', p.name_ru,
+					'type', p_vt.value,
+					'value', p.value,
+					'description_en', p.description_en,
+					'description_ru', p.description_ru,
+					'units_en', p.units_en,
+					'units_ru', p.units_ru,
+					'access', p_ac.value,
+					'saved', p.saved,
+					'visible', p.visible
+				),
+				'indicator', json_build_object(
+					'id', pi.id,
+					'oid_id', pi.oid_id,
+					'dotter_notation', pi.dotter_notation,
+					'oid', json_build_object(
+						'id', o.id,
+						'mib_id', o.mib,
+						'type', o_at.value,
+						'name', o.name,
+						'number', o.number,
+						'dotter_notation', o.dotter_notation,
+						'object_descriptor', o.object_descriptor,
+						'syntax', o.syntax,
+						'enum', o.enum,
+						'status', o_st.value,
+						'access', o_oac.value,
+						'units', o.units,
+						'description', o.description,
+						'category', o.category
+					)
+				)
 			)) FILTER (WHERE m.id IS NOT NULL)) AS mappings_json,
 			MAX(ath.thresholds_json::text)::json AS thresholds_json
 		FROM public.%s cfg
@@ -172,6 +215,15 @@ func executeGenericConfigSelect(ctx context.Context, table string, idFilter int6
 		LEFT JOIN device_tree dt ON cfg.id = dt.cfg_id
 		LEFT JOIN public.device_component_mapping dcm ON dt.id = dcm.device_component_id
 		LEFT JOIN public.mapping m ON dcm.mapping_id = m.id
+		LEFT JOIN public.polling_frequency pf ON m.frequency = pf.id
+		LEFT JOIN public.param p ON m.param = p.id
+		LEFT JOIN public.var_type p_vt ON p.type = p_vt.id
+		LEFT JOIN public.access p_ac ON p.access = p_ac.id
+		LEFT JOIN public.param_indicator pi ON m.indicator = pi.id
+		LEFT JOIN public.oid o ON pi.oid_id = o.id
+		LEFT JOIN public.asn1_type o_at ON o.type = o_at.id
+		LEFT JOIN public.oid_status o_st ON o.status = o_st.id
+		LEFT JOIN public.oid_access o_oac ON o.access = o_oac.id
 		LEFT JOIN aggregated_thresholds ath ON cfg.id = ath.cfg_id
 		%s
 		GROUP BY cfg.id, i.id, i.description, i.object_id, i.contact, i.name, i.location, i.services, dt.id, dt.model, dt.internal_order, dt.parent
@@ -244,11 +296,15 @@ func GetExpandedConfigurations(ctx context.Context) ([]model.Configuration, erro
 	if err != nil {
 		return nil, err
 	}
-
 	ids, indMap, dcMap, thMap := AssembleConfigurations(flatRows)
 	var list []model.Configuration
 	for _, id := range ids {
-		list = append(list, model.Configuration{ID: id, Indicator: indMap[id], DeviceComponent: dcMap[id], Thresholds: thMap[id]})
+		list = append(list, model.Configuration{
+			ID:              id,
+			Indicator:       indMap[id],
+			DeviceComponent: dcMap[id],
+			Thresholds:      thMap[id],
+		})
 	}
 	return list, nil
 }

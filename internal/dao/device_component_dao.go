@@ -58,7 +58,7 @@ func buildTreeFromRows(rows pgx.Rows) ([]model.DeviceComponent, error) {
 			}
 		}
 	}
-	if len(roots) == 0 && len(nodesMap) > 0 {
+	if len(nodesMap) > 0 && len(roots) == 0 {
 		for _, node := range nodesMap {
 			roots = append(roots, *node)
 			break
@@ -107,15 +107,58 @@ func GetDeviceComponentByID(ctx context.Context, id int64) (*model.DeviceCompone
 		SELECT dt.id, dt.model, dt.internal_order, dt.parent,
 		       json_strip_nulls(json_agg(json_build_object(
 				    'id', m.id,
-				    'indicator_id', m.indicator,
-				    'param_id', m.param,
-				    'frequency', m.frequency,
+				    'frequency', pf.value,
 				    'coefficient', m.coefficient,
-				    'enum', m.enum
+				    'enum', m.enum,
+				    'param', json_build_object(
+					    'id', p.id,
+					    'title', p.title,
+					    'name_en', p.name_en,
+					    'name_ru', p.name_ru,
+					    'type', p_vt.value,
+					    'value', p.value,
+					    'description_en', p.description_en,
+					    'description_ru', p.description_ru,
+					    'units_en', p.units_en,
+					    'units_ru', p.units_ru,
+					    'access', p_ac.value,
+					    'saved', p.saved,
+					    'visible', p.visible
+				    ),
+				    'indicator', json_build_object(
+					    'id', pi.id,
+					    'oid_id', pi.oid_id,
+					    'dotter_notation', pi.dotter_notation,
+					    'oid', json_build_object(
+						    'id', o.id,
+						    'mib_id', o.mib,
+						    'type', o_at.value,
+						    'name', o.name,
+						    'number', o.number,
+						    'dotter_notation', o.dotter_notation,
+						    'object_descriptor', o.object_descriptor,
+						    'syntax', o.syntax,
+						    'enum', o.enum,
+						    'status', o_st.value,
+						    'access', o_oac.value,
+						    'units', o.units,
+						    'description', o.description,
+						    'category', o.category
+					    )
+				    )
 				)) FILTER (WHERE m.id IS NOT NULL)) AS mappings_json
 		FROM device_tree dt
 		LEFT JOIN public.device_component_mapping dcm ON dt.id = dcm.device_component_id
 		LEFT JOIN public.mapping m ON dcm.mapping_id = m.id
+		LEFT JOIN public.polling_frequency pf ON m.frequency = pf.id
+		LEFT JOIN public.param p ON m.param = p.id
+		LEFT JOIN public.var_type p_vt ON p.type = p_vt.id
+		LEFT JOIN public.access p_ac ON p.access = p_ac.id
+		LEFT JOIN public.param_indicator pi ON m.indicator = pi.id
+		LEFT JOIN public.oid o ON pi.oid_id = o.id
+		LEFT JOIN public.asn1_type o_at ON o.type = o_at.id
+		LEFT JOIN public.oid_status o_st ON o.status = o_st.id
+		LEFT JOIN public.oid_access o_oac ON o.access = o_oac.id
 		GROUP BY dt.id, dt.model, dt.internal_order, dt.parent`
 	rows, err := conn.Query(ctx, query, id)
 	if err != nil {
@@ -144,15 +187,58 @@ func GetAllDeviceComponents(ctx context.Context) ([]model.DeviceComponent, error
 		SELECT dc.id, dc.model, dc.internal_order, dc.parent,
 		       json_strip_nulls(json_agg(json_build_object(
 				    'id', m.id,
-				    'indicator_id', m.indicator,
-				    'param_id', m.param,
-				    'frequency', m.frequency,
+				    'frequency', pf.value,
 				    'coefficient', m.coefficient,
-				    'enum', m.enum
+				    'enum', m.enum,
+				    'param', json_build_object(
+					    'id', p.id,
+					    'title', p.title,
+					    'name_en', p.name_en,
+					    'name_ru', p.name_ru,
+					    'type', p_vt.value,
+					    'value', p.value,
+					    'description_en', p.description_en,
+					    'description_ru', p.description_ru,
+					    'units_en', p.units_en,
+					    'units_ru', p.units_ru,
+					    'access', p_ac.value,
+					    'saved', p.saved,
+					    'visible', p.visible
+				    ),
+				    'indicator', json_build_object(
+					    'id', pi.id,
+					    'oid_id', pi.oid_id,
+					    'dotter_notation', pi.dotter_notation,
+					    'oid', json_build_object(
+						    'id', o.id,
+						    'mib_id', o.mib,
+						    'type', o_at.value,
+						    'name', o.name,
+						    'number', o.number,
+						    'dotter_notation', o.dotter_notation,
+						    'object_descriptor', o.object_descriptor,
+						    'syntax', o.syntax,
+						    'enum', o.enum,
+						    'status', o_st.value,
+						    'access', o_oac.value,
+						    'units', o.units,
+						    'description', o.description,
+						    'category', o.category
+					    )
+				    )
 				)) FILTER (WHERE m.id IS NOT NULL)) AS mappings_json
 		FROM public.device_component dc
 		LEFT JOIN public.device_component_mapping dcm ON dc.id = dcm.device_component_id
 		LEFT JOIN public.mapping m ON dcm.mapping_id = m.id
+		LEFT JOIN public.polling_frequency pf ON m.frequency = pf.id
+		LEFT JOIN public.param p ON m.param = p.id
+		LEFT JOIN public.var_type p_vt ON p.type = p_vt.id
+		LEFT JOIN public.access p_ac ON p.access = p_ac.id
+		LEFT JOIN public.param_indicator pi ON m.indicator = pi.id
+		LEFT JOIN public.oid o ON pi.oid_id = o.id
+		LEFT JOIN public.asn1_type o_at ON o.type = o_at.id
+		LEFT JOIN public.oid_status o_st ON o.status = o_st.id
+		LEFT JOIN public.oid_access o_oac ON o.access = o_oac.id
 		GROUP BY dc.id, dc.model, dc.internal_order, dc.parent`
 	rows, err := conn.Query(ctx, query)
 	if err != nil {

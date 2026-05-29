@@ -99,8 +99,8 @@ type ParamIndicator struct {
 
 type Mapping struct {
 	ID          int64             `json:"id" example:"1"`
-	IndicatorID int64             `json:"indicator_id" example:"2"`
-	ParamID     int64             `json:"param_id" example:"5"`
+	Indicator   *ParamIndicator   `json:"indicator"`
+	Param       *Param            `json:"param"`
 	Frequency   PollingFrequency  `json:"frequency" swaggertype:"primitive,string" example:"MEDIUM"`
 	Coefficient *string           `json:"coefficient,omitempty" example:"1.500000000000"`
 	Enum        map[string]string `json:"enum,omitempty"`
