@@ -1787,6 +1787,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/oids/exact-with-mib-and-vendor": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "4. Парсер: OID"
+                ],
+                "summary": "Поиск OID по dotter_notation, имени MIB и вендору",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Точная dotter_notation",
+                        "name": "notation",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Точное название MIB",
+                        "name": "mib",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Имя или директория вендора (передайте null или оставьте пустым для фильтрации по NULL вендорам)",
+                        "name": "vendor",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filler_internal_model.Oid"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/oids/mib": {
             "get": {
                 "produces": [

@@ -1888,6 +1888,48 @@ paths:
       summary: Поиск OID по dotter_notation и имени MIB
       tags:
       - '4. Парсер: OID'
+  /api/v1/oids/exact-with-mib-and-vendor:
+    get:
+      parameters:
+      - description: Точная dotter_notation
+        in: query
+        name: notation
+        required: true
+        type: string
+      - description: Точное название MIB
+        in: query
+        name: mib
+        required: true
+        type: string
+      - description: Имя или директория вендора (передайте null или оставьте пустым
+          для фильтрации по NULL вендорам)
+        in: query
+        name: vendor
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/filler_internal_model.Oid'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Поиск OID по dotter_notation, имени MIB и вендору
+      tags:
+      - '4. Парсер: OID'
   /api/v1/oids/mib:
     get:
       parameters:

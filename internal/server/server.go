@@ -29,6 +29,7 @@ func NewServer() *Server {
 		{
 			oids.GET("/exact", GetOidsByExactNotation)
 			oids.GET("/exact-with-mib", GetOidsByDotterAndMib)
+			oids.GET("/exact-with-mib-and-vendor", GetOidsByDotterMibAndVendor)
 			oids.GET("/prefix", GetOidsByPrefixNotation)
 			oids.GET("/mib", GetOidsByMib)
 			oids.GET("/vendor", GetOidsByVendor)

@@ -53,28 +53,23 @@ func GetOidsByPrefixNotation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Параметр 'prefix' не может быть пустым"})
 		return
 	}
-
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
-	if page < 1 {
+	if page == 0 || page < 0 {
 		page = 1
 	}
-
 	res, err := dao.GetOidsByDotterPrefix(c.Request.Context(), prefix)
 	if err != nil {
 		logger.Error("Ошибка DAO при выборке OID по префиксу: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	sort.Slice(res, func(i, j int) bool {
 		return model.CompareOids(res[i].DotterNotation, res[j].DotterNotation)
 	})
-
 	perPage := 100
 	totalItems := len(res)
 	start := (page - 1) * perPage
 	end := start + perPage
-
 	var pagedItems []model.Oid
 	if start < totalItems {
 		if end > totalItems {
@@ -84,7 +79,6 @@ func GetOidsByPrefixNotation(c *gin.Context) {
 	} else {
 		pagedItems = []model.Oid{}
 	}
-
 	c.JSON(http.StatusOK, dto.OidPageResponse{
 		Page:       page,
 		PerPage:    perPage,
@@ -197,5 +191,40 @@ func GetOidsByDotterAndMib(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, res)
+}
+
+// GetOidsByDotterMibAndVendor возвращает OID по нотации, мибу и вендору со специфичной числовой сортировкой результатов
+// @Summary         Поиск OID по dotter_notation, имени MIB и вендору
+// @Tags            4. Парсер: OID
+// @Produce         json
+// @Param           notation query    string  true  "Точная dotter_notation"
+// @Param           mib      query    string  true  "Точное название MIB"
+// @Param           vendor   query    string  false "Имя или директория вендора (передайте null или оставьте пустым для фильтрации по NULL вендорам)"
+// @Success         200      {array}  model.Oid
+// @Failure         400      {object} map[string]string
+// @Failure         500      {object} map[string]string
+// @Router          /api/v1/oids/exact-with-mib-and-vendor [get]
+func GetOidsByDotterMibAndVendor(c *gin.Context) {
+	notation := c.Query("notation")
+	mibName := c.Query("mib")
+	vendorIdent, hasVendor := c.GetQuery("vendor")
+	if notation == "" || mibName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Параметры 'notation' и 'mib' не могут быть пустыми"})
+		return
+	}
+	var vendorPtr *string
+	if hasVendor && vendorIdent != "" && vendorIdent != "null" && vendorIdent != "NULL" {
+		vendorPtr = &vendorIdent
+	}
+	res, err := dao.GetOidsByDotterMibAndVendor(c.Request.Context(), notation, mibName, vendorPtr)
+	if err != nil {
+		logger.Error("Ошибка DAO при выборке OID по нотации, MIB и вендору: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	sort.Slice(res, func(i, j int) bool {
+		return model.CompareOids(res[i].DotterNotation, res[j].DotterNotation)
+	})
 	c.JSON(http.StatusOK, res)
 }

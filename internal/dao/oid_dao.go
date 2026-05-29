@@ -122,3 +122,31 @@ func GetOidsByDotterAndMibName(ctx context.Context, dotter string, mibName strin
 	defer rows.Close()
 	return scanOidRows(rows)
 }
+
+// GetOidsByDotterMibAndVendor возвращает OID по точному совпадению dotter_notation, имени MIB и имени/директории вендора (поддерживает указатель на string для NULL)
+func GetOidsByDotterMibAndVendor(ctx context.Context, dotter string, mibName string, vendorIdentity *string) ([]model.Oid, error) {
+	conn := database.Get()
+	var rows pgx.Rows
+	var err error
+	if vendorIdentity == nil {
+		query := `
+			SELECT o.id, o.mib, o.type, o.name, o.number, o.dotter_notation, o.object_descriptor, o.syntax, o.enum, o.status, o.access, o.units, o.description, o.category 
+			FROM public.oid o
+			JOIN public.mib m ON o.mib = m.id
+			WHERE o.dotter_notation = $1 AND m.name = $2 AND m.vendor IS NULL`
+		rows, err = conn.Query(ctx, query, dotter, mibName)
+	} else {
+		query := `
+			SELECT o.id, o.mib, o.type, o.name, o.number, o.dotter_notation, o.object_descriptor, o.syntax, o.enum, o.status, o.access, o.units, o.description, o.category 
+			FROM public.oid o
+			JOIN public.mib m ON o.mib = m.id
+			JOIN public.vendor v ON m.vendor = v.id
+			WHERE o.dotter_notation = $1 AND m.name = $2 AND (v.name = $3 OR v.directory = $3)`
+		rows, err = conn.Query(ctx, query, dotter, mibName, *vendorIdentity)
+	}
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanOidRows(rows)
+}
