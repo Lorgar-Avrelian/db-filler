@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetOidsByExactNotation возвращает OID по точному совпадению dotter_notation
-// @Summary         Полноразмерный OID по dotter_notation
+// GetOidsByExactNotation возвращает OID по точному совпадению dotter notation
+// @Summary         Поиск OID по dotter notation
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           notation query    string  true  "Точная dotter_notation"
@@ -38,7 +38,7 @@ func GetOidsByExactNotation(c *gin.Context) {
 
 // GetOidsByPrefixNotation возвращает OID по префиксу с пагинацией и сортировкой в Go
 // @Summary         Поиск OID по префиксу с пагинацией
-// @Description     Возвращает отсортированный по dotter_notation список OID (по 100 на страницу). Сортировка на стороне приложения.
+// @Description     Возвращает отсортированный по dotter notation список OID (по 100 на страницу)
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           prefix   query    string  true  "Префикс dotter_notation"
@@ -88,7 +88,7 @@ func GetOidsByPrefixNotation(c *gin.Context) {
 }
 
 // GetOidsByMib возвращает OID по названию MIB
-// @Summary         Получить OID по имени MIB
+// @Summary         Получить OID по названию MIB
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           name     query    string  true  "Название MIB"
@@ -111,9 +111,9 @@ func GetOidsByMib(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// GetOidsByVendor возвращает OID вендора с пагинацией и сортировкой в Go
-// @Summary         Получить OID по вендору с пагинацией
-// @Description     Находит вендора в кэше памяти, выгружает OID, сортирует в Go и отдает по 100 штук на страницу.
+// GetOidsByVendor возвращает OID производителя с пагинацией и сортировкой
+// @Summary         Получить OID по производителю с пагинацией
+// @Description     Находит производителя в кэше памяти, выгружает OID, сортирует и отдаёт по 100 штук на страницу
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           identity query    string  true  "Имя вендора или его директория"
@@ -168,8 +168,8 @@ func GetOidsByVendor(c *gin.Context) {
 	})
 }
 
-// GetOidsByDotterAndMib возвращает OID по точному совпадению dotter_notation и имени MIB
-// @Summary         Поиск OID по dotter_notation и имени MIB
+// GetOidsByDotterAndMib возвращает OID по точному совпадению dotter notation и названию MIB
+// @Summary         Поиск OID по dotter notation и названию MIB
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           notation query    string  true  "Точная dotter_notation"
@@ -194,8 +194,8 @@ func GetOidsByDotterAndMib(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// GetOidsByDotterMibAndVendor возвращает OID по нотации, мибу и вендору со специфичной числовой сортировкой результатов
-// @Summary         Поиск OID по dotter_notation, имени MIB и вендору
+// GetOidsByDotterMibAndVendor возвращает OID по dotter notation, MIB и производителю со специфичной числовой сортировкой результатов
+// @Summary         Поиск OID по dotter notation, названию MIB и производителю
 // @Tags            4. Парсер: OID
 // @Produce         json
 // @Param           notation query    string  true  "Точная dotter_notation"

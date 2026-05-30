@@ -1690,7 +1690,7 @@ const docTemplate = `{
                 "tags": [
                     "4. Парсер: OID"
                 ],
-                "summary": "Полноразмерный OID по dotter_notation",
+                "summary": "Поиск OID по dotter notation",
                 "parameters": [
                     {
                         "type": "string",
@@ -1739,7 +1739,7 @@ const docTemplate = `{
                 "tags": [
                     "4. Парсер: OID"
                 ],
-                "summary": "Поиск OID по dotter_notation и имени MIB",
+                "summary": "Поиск OID по dotter notation и названию MIB",
                 "parameters": [
                     {
                         "type": "string",
@@ -1795,7 +1795,7 @@ const docTemplate = `{
                 "tags": [
                     "4. Парсер: OID"
                 ],
-                "summary": "Поиск OID по dotter_notation, имени MIB и вендору",
+                "summary": "Поиск OID по dotter notation, названию MIB и производителю",
                 "parameters": [
                     {
                         "type": "string",
@@ -1857,7 +1857,7 @@ const docTemplate = `{
                 "tags": [
                     "4. Парсер: OID"
                 ],
-                "summary": "Получить OID по имени MIB",
+                "summary": "Получить OID по названию MIB",
                 "parameters": [
                     {
                         "type": "string",
@@ -1900,7 +1900,7 @@ const docTemplate = `{
         },
         "/api/v1/oids/prefix": {
             "get": {
-                "description": "Возвращает отсортированный по dotter_notation список OID (по 100 на страницу). Сортировка на стороне приложения.",
+                "description": "Возвращает отсортированный по dotter notation список OID (по 100 на страницу)",
                 "produces": [
                     "application/json"
                 ],
@@ -1953,14 +1953,14 @@ const docTemplate = `{
         },
         "/api/v1/oids/vendor": {
             "get": {
-                "description": "Находит вендора в кэше памяти, выгружает OID, сортирует в Go и отдает по 100 штук на страницу.",
+                "description": "Находит производителя в кэше памяти, выгружает OID, сортирует и отдаёт по 100 штук на страницу",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "4. Парсер: OID"
                 ],
-                "summary": "Получить OID по вендору с пагинацией",
+                "summary": "Получить OID по производителю с пагинацией",
                 "parameters": [
                     {
                         "type": "string",

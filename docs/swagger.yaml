@@ -1848,7 +1848,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Полноразмерный OID по dotter_notation
+      summary: Поиск OID по dotter notation
       tags:
       - '4. Парсер: OID'
   /api/v1/oids/exact-with-mib:
@@ -1885,7 +1885,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Поиск OID по dotter_notation и имени MIB
+      summary: Поиск OID по dotter notation и названию MIB
       tags:
       - '4. Парсер: OID'
   /api/v1/oids/exact-with-mib-and-vendor:
@@ -1927,7 +1927,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Поиск OID по dotter_notation, имени MIB и вендору
+      summary: Поиск OID по dotter notation, названию MIB и производителю
       tags:
       - '4. Парсер: OID'
   /api/v1/oids/mib:
@@ -1959,13 +1959,13 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Получить OID по имени MIB
+      summary: Получить OID по названию MIB
       tags:
       - '4. Парсер: OID'
   /api/v1/oids/prefix:
     get:
-      description: Возвращает отсортированный по dotter_notation список OID (по 100
-        на страницу). Сортировка на стороне приложения.
+      description: Возвращает отсортированный по dotter notation список OID (по 100
+        на страницу)
       parameters:
       - description: Префикс dotter_notation
         in: query
@@ -2000,8 +2000,8 @@ paths:
       - '4. Парсер: OID'
   /api/v1/oids/vendor:
     get:
-      description: Находит вендора в кэше памяти, выгружает OID, сортирует в Go и
-        отдает по 100 штук на страницу.
+      description: Находит производителя в кэше памяти, выгружает OID, сортирует и
+        отдаёт по 100 штук на страницу
       parameters:
       - description: Имя вендора или его директория
         in: query
@@ -2037,7 +2037,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Получить OID по вендору с пагинацией
+      summary: Получить OID по производителю с пагинацией
       tags:
       - '4. Парсер: OID'
   /api/v1/param-indicators:

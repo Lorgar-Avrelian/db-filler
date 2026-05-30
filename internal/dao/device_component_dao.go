@@ -93,7 +93,7 @@ func CreateDeviceComponent(ctx context.Context, d dto.DeviceComponentCreate) (*m
 	return &dc, nil
 }
 
-// GetDeviceComponentByID рекурсивно собирает всю ветку компонента вниз по иерархии
+// GetDeviceComponentByID рекурсивно собирает всю ветку компонента вниз по иерархии со всеми маппингами для каждого уровня
 func GetDeviceComponentByID(ctx context.Context, id int64) (*model.DeviceComponent, error) {
 	conn := database.Get()
 	query := `
@@ -180,7 +180,7 @@ func GetDeviceComponentByID(ctx context.Context, id int64) (*model.DeviceCompone
 	return &tree[0], nil
 }
 
-// GetAllDeviceComponents возвращает полный массив иерархических деревьев устройств
+// GetAllDeviceComponents возвращает полный массив иерархических деревьев устройств со всеми маппингами
 func GetAllDeviceComponents(ctx context.Context) ([]model.DeviceComponent, error) {
 	conn := database.Get()
 	query := `

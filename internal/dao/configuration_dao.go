@@ -55,6 +55,7 @@ func AssembleConfigurations(flatRows []ConfigFlatRow) ([]int64, map[int64]*model
 	configThresholdsMap := make(map[int64][]model.Threshold)
 	type edge struct{ parent, child int64 }
 	var edges []edge
+	nodeToConfigMap := make(map[int64]int64)
 	for _, r := range flatRows {
 		if !seenConfigs[r.ConfigID] {
 			seenConfigs[r.ConfigID] = true
@@ -68,6 +69,7 @@ func AssembleConfigurations(flatRows []ConfigFlatRow) ([]int64, map[int64]*model
 			}
 		}
 		if r.DcID.Valid {
+			nodeToConfigMap[r.DcID.Int64] = r.ConfigID
 			if _, ok := dcNodes[r.DcID.Int64]; !ok {
 				node := model.DeviceComponent{
 					ID:            r.DcID.Int64,
@@ -112,11 +114,18 @@ func AssembleConfigurations(flatRows []ConfigFlatRow) ([]int64, map[int64]*model
 		}
 	}
 	configComponentMap := make(map[int64]*model.DeviceComponent)
-	for _, r := range flatRows {
-		if r.DcID.Valid {
-			if node, ok := dcNodes[r.DcID.Int64]; ok {
-				configComponentMap[r.ConfigID] = node
+	for nodeID, node := range dcNodes {
+		cfgID := nodeToConfigMap[nodeID]
+		isRoot := false
+		if node.ParentID == nil {
+			isRoot = true
+		} else {
+			if _, parentExists := dcNodes[*node.ParentID]; !parentExists {
+				isRoot = true
 			}
+		}
+		if isRoot {
+			configComponentMap[cfgID] = node
 		}
 	}
 	return configIDs, indicatorsMap, configComponentMap, configThresholdsMap
