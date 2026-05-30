@@ -347,6 +347,22 @@ definitions:
     - title
     - type
     type: object
+  filler_internal_dto.SaveResultRequest:
+    properties:
+      author:
+        example: Tokovenko
+        type: string
+      filename:
+        example: data
+        type: string
+      start_value:
+        example: 172
+        type: integer
+    required:
+    - author
+    - filename
+    - start_value
+    type: object
   filler_internal_dto.ThresholdCreate:
     properties:
       enabled:
@@ -2476,6 +2492,43 @@ paths:
       summary: Удалить связь компонента с параметром
       tags:
       - '3. Модельный каталог: Связи'
+  /api/v1/save-result:
+    post:
+      consumes:
+      - application/json
+      description: Выгружает данные 13 основных таблиц в структурированный .sql файл
+        в корне проекта с разбиением на changeset-ы
+      parameters:
+      - description: Параметры экспорта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/filler_internal_dto.SaveResultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешном создании файла
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка валидации данных
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Внутренняя ошибка при записи файла или чтении БД
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Экспортировать результаты в Liquibase скрипт
+      tags:
+      - '12. Результат: Экспортировать БД в Liquibase скрипт'
   /api/v1/thresholds:
     get:
       produces:
@@ -2645,3 +2698,4 @@ tags:
 - name: '9. Конфигурация: Конфигурации по-умолчанию'
 - name: '10. Конфигурация: Конфигурации устройств'
 - name: '11. Конфигурация: Пороги'
+- name: '12. Результат: Экспортировать БД в Liquibase скрипт'

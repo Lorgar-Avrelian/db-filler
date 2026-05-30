@@ -179,7 +179,7 @@ func executeGenericConfigSelect(ctx context.Context, table string, idFilter int6
 			json_strip_nulls(json_agg(json_build_object(
 				'id', m.id,
 				'frequency', pf.value,
-				'coefficient', m.coefficient,
+				'coefficient', m.coefficient::text,
 				'enum', m.enum,
 				'param', json_build_object(
 					'id', p.id,

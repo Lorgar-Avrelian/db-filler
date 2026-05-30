@@ -2673,6 +2673,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/save-result": {
+            "post": {
+                "description": "Выгружает данные 13 основных таблиц в структурированный .sql файл в корне проекта с разбиением на changeset-ы",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "12. Результат: Экспортировать БД в Liquibase скрипт"
+                ],
+                "summary": "Экспортировать результаты в Liquibase скрипт",
+                "parameters": [
+                    {
+                        "description": "Параметры экспорта",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filler_internal_dto.SaveResultRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Сообщение об успешном создании файла",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации данных",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка при записи файла или чтении БД",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/thresholds": {
             "get": {
                 "produces": [
@@ -3394,6 +3449,28 @@ const docTemplate = `{
                 }
             }
         },
+        "filler_internal_dto.SaveResultRequest": {
+            "type": "object",
+            "required": [
+                "author",
+                "filename",
+                "start_value"
+            ],
+            "properties": {
+                "author": {
+                    "type": "string",
+                    "example": "Tokovenko"
+                },
+                "filename": {
+                    "type": "string",
+                    "example": "data"
+                },
+                "start_value": {
+                    "type": "integer",
+                    "example": 172
+                }
+            }
+        },
         "filler_internal_dto.ThresholdCreate": {
             "type": "object",
             "required": [
@@ -3931,6 +4008,9 @@ const docTemplate = `{
         },
         {
             "name": "11. Конфигурация: Пороги"
+        },
+        {
+            "name": "12. Результат: Экспортировать БД в Liquibase скрипт"
         }
     ]
 }`

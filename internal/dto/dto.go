@@ -174,3 +174,9 @@ type BindDefaultConfigThresholdRequest struct {
 	DefaultConfigurationID int64 `json:"default_configuration_id" binding:"required" example:"1"`
 	ThresholdID            int64 `json:"threshold_id" binding:"required" example:"5"`
 }
+
+type SaveResultRequest struct {
+	Filename   string `json:"filename" binding:"required" example:"data"`
+	Author     string `json:"author" binding:"required" example:"Tokovenko"`
+	StartValue int    `json:"start_value" binding:"required" example:"172"`
+}

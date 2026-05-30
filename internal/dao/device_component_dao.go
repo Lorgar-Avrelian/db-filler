@@ -108,7 +108,7 @@ func GetDeviceComponentByID(ctx context.Context, id int64) (*model.DeviceCompone
 		       json_strip_nulls(json_agg(json_build_object(
 				    'id', m.id,
 				    'frequency', pf.value,
-				    'coefficient', m.coefficient,
+				    'coefficient', m.coefficient::text,
 				    'enum', m.enum,
 				    'param', json_build_object(
 					    'id', p.id,
@@ -188,7 +188,7 @@ func GetAllDeviceComponents(ctx context.Context) ([]model.DeviceComponent, error
 		       json_strip_nulls(json_agg(json_build_object(
 				    'id', m.id,
 				    'frequency', pf.value,
-				    'coefficient', m.coefficient,
+				    'coefficient', m.coefficient::text,
 				    'enum', m.enum,
 				    'param', json_build_object(
 					    'id', p.id,

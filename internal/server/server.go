@@ -25,6 +25,8 @@ func NewServer() *Server {
 
 	v1 := r.Group("/api/v1")
 	{
+		v1.POST("/save-result", SaveResult)
+
 		oids := v1.Group("/oids")
 		{
 			oids.GET("/exact", GetOidsByExactNotation)

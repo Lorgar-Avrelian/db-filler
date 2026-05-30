@@ -25,6 +25,7 @@ import (
 // @tag.name        9. Конфигурация: Конфигурации по-умолчанию
 // @tag.name        10. Конфигурация: Конфигурации устройств
 // @tag.name        11. Конфигурация: Пороги
+// @tag.name        12. Результат: Экспортировать БД в Liquibase скрипт
 // @contact.name    Lorgar Avrelian
 // @contact.url     https://github.com/Lorgar-Avrelian
 // @contact.email   victor-14-244@mail.ru

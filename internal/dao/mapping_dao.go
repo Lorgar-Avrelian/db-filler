@@ -36,7 +36,7 @@ func GetMappingByID(ctx context.Context, id int64) (*model.Mapping, error) {
 		SELECT json_strip_nulls(json_build_object(
 			'id', m.id,
 			'frequency', pf.value,
-			'coefficient', m.coefficient,
+			'coefficient', m.coefficient::text,
 			'enum', m.enum,
 			'param', json_build_object(
 				'id', p.id,
@@ -103,7 +103,7 @@ func GetAllMappings(ctx context.Context) ([]model.Mapping, error) {
 		SELECT json_strip_nulls(json_build_object(
 			'id', m.id,
 			'frequency', pf.value,
-			'coefficient', m.coefficient,
+			'coefficient', m.coefficient::text,
 			'enum', m.enum,
 			'param', json_build_object(
 				'id', p.id,
